@@ -1,4 +1,4 @@
-# ISHKnowledge
+# ISHWeiss
 
 Byte-sized Chunks of Knowledge and Experience
 
