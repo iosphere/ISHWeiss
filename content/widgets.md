@@ -58,6 +58,16 @@
 * Update the preferred content size
 * Wait for `viewWillTransition(to:with:)` to be called and update UI accordingly
 
+## Detecting if Device is Locked
+
+1. Make sure [Data Protection](https://developer.apple.com/library/content/documentation/IDEs/Conceptual/AppDistributionGuide/AddingCapabilities/AddingCapabilities.html#//apple_ref/doc/uid/TP40012582-CH26-SW30) is enabled for your main app
+2. The first time your main app starts, create a dummy file (let's call it `ProtectionMonitor.dummy`) in a shared group container which is accessible for both the main app and the widget
+	* You can create this file with `NSFileManager.default.createFile(atPath:contents:attributes:)`
+	* Make sure you pass the dictionary `{NSFileProtectionKey: NSFileProtectionComplete}` as the attributes parameter. This makes sure the file is protected with Data Protection.
+3. Every time your widget starts, try to read the file `ProtectionMonitor.dummy`. If it is unreadable the device is locked. Otherwise it's not. 
+	* You may read the file with `Data(contentsOfFile:options:)`
+	* However, every other method that reads a file from disk should be fine, too
+
 ## Other Notes
 
 * Presented view controllers are discouraged
