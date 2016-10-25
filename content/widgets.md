@@ -66,3 +66,9 @@
 	* Child view controller should be fine
 
 * If you have more than one widget, use the `UIApplicationShortcutWidget` Info-Plist key to specify the widget (by bundle ID) which should be shown upon 3D-touching the homescreen app icon.
+
+* Data Protection should not be enabled for widgets (do not set `com.apple.developer.default-data-protection` to a valid value in your widget's entitlements file). If you do, iOS will fail to create a snapshot of your widget after showing widgets in the lock screen. You can see a similar log entry in the console:
+> ImageIO: IIOImageWriteSession:111: cannot create: '/private/var/mobile/Containers/Data/PluginKitPlugin/C4C7DD84-E4FC-4507-8D77-364970936BD8/Library/Caches/com.apple.notificationcenter/Snapshots/<Widget-Identifier>-PhoneTall-359-<Locale>-UICTContentSizeCategoryL-NCWidgetDisplayModeCompact.ca/assets/image0.ktx.sb-e8f991c7-ZpFG9m'
+> error = 1 (Operation not permitted)
+
+	In this case, Springboard will crash the next time your widget should be shown (as the snapshot is missing).
