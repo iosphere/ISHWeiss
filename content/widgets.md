@@ -2,6 +2,8 @@
 
 All observations have been made on iOS 10 and Xcode 8. Some points may not be applicable for iOS-9-style widgets.
 
+Additional iOS 11 observations have been added.
+
 ## Call Order at Launch
 
 (obviously missing some within the object lifecycle, but these are the ones we feel are important)
@@ -18,12 +20,15 @@ All observations have been made on iOS 10 and Xcode 8. Some points may not be ap
 	
 * `viewWillTransition(to:with:)`
 	
-	* First method to be called with the correct view bounds, including subviews. Should be used to resize everything that is not updated through auto layout (e.g., collection view item sizes and insets).
+	* iOS 11: **not** called initially
+	* iOS 10: First method to be called with the correct view bounds, including subviews. Should be used to resize everything that is not updated through auto layout (e.g., collection view item sizes and insets).
 	* `traitCollection` is also complete: Compact width and regular height on iPhone (incl. 6/7 Plus in landscape), both regular on iPad. Does not seem to change during rotation.
 	
 * `viewWillAppear(_)`
 
-	* Delayed slightly. Should probably not be implemented in most cases, see discussion below.
+   * iOS 11: Resize everything that is not updated through auto layout.
+   * iOS 10: Should probably not be implemented in most cases.
+   * May be delayed slightly, see discussion below.
 
 ## Lifecycle
 
@@ -39,7 +44,6 @@ All observations have been made on iOS 10 and Xcode 8. Some points may not be ap
 	
 * `viewWillAppear(_)` may be called while the widget is already visible on screen: If you scroll, it's not called until scrolling has finished
 	* Anything you'd do that does not depend on the correct bounds should be done in `viewDidLoad()`
-	* Anything you'd do that depends on the correct bounds should be done in `viewWillTransition(to:with:)`
 
 * Updates to `widgetLargestAvailableDisplayMode` are animated so you should not initialize it to one value just to set it back right afterwards, as this will cause the "Show More"/"Show Less" button to flicker for a second 
 
@@ -48,6 +52,8 @@ All observations have been made on iOS 10 and Xcode 8. Some points may not be ap
 * Although this may change over time, we observed that VCs are rarely re-used – after a few seconds off screen, the VC will be discarded, and the same widget process will create a new VC when required. However, the old VC's `dealloc`/`deinit` is not called until the process becomes active again and creates a new VC, so you should not wait for `dealloc`/`deinit` to clean up or stop unnecessary work (like streaming data from your backgrounded app to the widget).
 
 ## iPad
+
+* iOS 11 does not have a two-column layout on iPad
 
 * Widgets can have different widths depending on the orientation and the column which they are assigned to
 	* Portrait: All widgets in one column, equal widths
